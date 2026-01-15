@@ -1,0 +1,29 @@
+name: Build Mission Planner
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Restore NuGet
+      run: nuget restore MissionPlanner.sln
+
+    - name: Build Release x86
+      run: msbuild MissionPlanner.sln /p:Configuration=Release /p:Platform=x86
+
+    - name: Upload exe
+      uses: actions/upload-artifact@v4
+      with:
+        name: MissionPlanner-Release
+        path: |
+          MissionPlanner/bin/Release/**
